@@ -3,9 +3,9 @@ import requests
 import random
 import time
 
-consumer_key = '*****'
-consumer_secret = '*****'
-access_token = '*****'
+consumer_key = '******'
+consumer_secret = '******'
+access_token = '******'
 access_token_secret = '*****'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -41,10 +41,11 @@ def store_last_seen(FILE_NAME, last_seen_id):
     return
 
 def reply_tweet(tweet, joke, img):
-    message = "@" + tweet.user.screen_name
-    message = message + " there goes a funny joke \n\n"
+    message = ' there goes a funny joke \n\n'
     message = message + joke
-    api.update_with_media(img, message, tweet.id)
+    status = '@' + tweet.user.screen_name + message
+    api.create_favorite(tweet.id)
+    api.update_with_media(img, status, in_reply_to_status_id = tweet.id)
     store_last_seen(FILE_NAME, tweet.id)
 
 def main():
@@ -55,5 +56,5 @@ def main():
         reply_tweet(tweet, joke, img)
 
 while True:
-    time.sleep(3.0)
+    sleep(10.0)
     main()
