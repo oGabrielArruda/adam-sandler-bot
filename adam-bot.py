@@ -3,9 +3,9 @@ import requests
 import random
 import time
 
-consumer_key = '******'
-consumer_secret = '******'
-access_token = '******'
+consumer_key = '*****'
+consumer_secret = '*****'
+access_token = '*****'
 access_token_secret = '*****'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -56,5 +56,5 @@ def main():
         reply_tweet(tweet, joke, img)
 
 while True:
-    sleep(10.0)
+    time.sleep(15.0)
     main()
