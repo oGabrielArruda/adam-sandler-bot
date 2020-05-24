@@ -10,7 +10,8 @@ access_token_secret = '*****'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True, 
+wait_on_rate_limit_notify=True)
 
 FILE_NAME = 'last_seen.txt'
 
@@ -40,21 +41,30 @@ def store_last_seen(FILE_NAME, last_seen_id):
     file_write.close()
     return
 
+def is_not_reply(tweet):
+    count = tweet.full_text.count('@')
+    return count == 1
+
 def reply_tweet(tweet, joke, img):
     message = ' there goes a funny joke \n\n'
     message = message + joke
     status = '@' + tweet.user.screen_name + message
     api.create_favorite(tweet.id)
-    api.update_with_media(img, status, in_reply_to_status_id = tweet.id)
+    #api.update_with_media(img, status, in_reply_to_status_id = tweet.id)
     store_last_seen(FILE_NAME, tweet.id)
 
-def main():
+
+def bot_run():
     tweets = api.mentions_timeline(read_last_seen(FILE_NAME), tweet_mode='extended')
     for tweet in reversed(tweets):
-        joke = generate_joke()
-        img = select_image_path()
-        reply_tweet(tweet, joke, img)
+        if is_not_reply(tweet):
+            joke = generate_joke()
+            img = select_image_path()
+            reply_tweet(tweet, joke, img)
 
-while True:
-    time.sleep(15.0)
-    main()
+def main():
+    while True:
+        bot_run()
+        time.sleep(10)
+
+main()
