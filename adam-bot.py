@@ -34,8 +34,8 @@ def generate_joke_by_lang(url, quest_field, answer_field):
 
 def generate_joke(lang):
     if(lang == 'pt'):
-        url = 'https://us-central1-kivson.cloudfunctions.net/charada-aleatoria'
-        return 'lá vai uma piada engraçada\n\n' + generate_joke_by_lang(url, 'pergunta', 'resposta')
+        url = 'https://api-charada.herokuapp.com/puzzle'
+        return 'lá vai uma piada engraçada\n\n' + generate_joke_by_lang(url, 'question', 'answer')
     elif(lang == 'en'):
         url = 'https://official-joke-api.appspot.com/random_joke'
         return 'there goes a funny joke \n\n' + generate_joke_by_lang(url, 'setup', 'punchline')
