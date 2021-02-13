@@ -1,1 +1,1 @@
-web: python3 adam-sandler-bot.py
+web: python3 adam-bot.py
