@@ -2,24 +2,25 @@ import tweepy
 import requests
 import random
 import time
+from boto.s3.connection import S3Connection
 
-consumer_key = '*****'
-consumer_secret = '*****'
-access_token = '*****'
-access_token_secret = '*****'
+consumer_key = os.environ['CONSUMER_KEY']
+consumer_secret = os.environ['CONSUMER_SECRET']
+access_token = os.environ['ACCESS_TOKEN']
+access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth, wait_on_rate_limit=True, 
+api = tweepy.API(auth, wait_on_rate_limit=True,
 wait_on_rate_limit_notify=True)
 
 FILE_NAME = 'last_seen.txt'
 
 
-def select_language(text):    
+def select_language(text):
     if(text.count('@adamsandlerbot en') > 0):
         return 'en'
-    if(text.count('@adamsandlerbot pt') > 0):
+    if(text.count('pt') > 0):
         return 'pt'
     return 'en'
 
@@ -41,8 +42,8 @@ def generate_joke(lang):
         return 'there goes a funny joke \n\n' + generate_joke_by_lang(url, 'setup', 'punchline')
 
 def select_image_path():
-    nmr = random.randint(1, 32)
-    image_path = 'images/' + str(nmr) + '.jpg'
+    nmr = random.randint(1, 31)
+    image_path = str(nmr) + '.jpg'
     return image_path
 
 def read_last_seen(FILE_NAME):
@@ -59,17 +60,20 @@ def store_last_seen(FILE_NAME, last_seen_id):
 
 def is_not_reply(tweet):
     count = tweet.full_text.count('@')
-    return count < 3
+    return count < 5
 
 def reply_tweet(tweet, joke, img):
     status = '@' + tweet.user.screen_name + ' ' + joke
-    api.create_favorite(tweet.id)
+    try:
+        api.create_favorite(tweet.id)
+    except:
+        pass
     api.update_with_media(img, status, in_reply_to_status_id = tweet.id)
     store_last_seen(FILE_NAME, tweet.id)
     print("Replied!")
 
 def bot_run():
-    tweets = api.mentions_timeline(read_last_seen(FILE_NAME), tweet_mode='extended')    
+    tweets = api.mentions_timeline(read_last_seen(FILE_NAME), tweet_mode='extended')
     for tweet in reversed(tweets):
         if is_not_reply(tweet):
             lang = select_language(tweet.full_text)
@@ -82,9 +86,11 @@ def main():
         try:
             bot_run()
             time.sleep(10)
-        except tweepy.TweepError:
+        except tweepy.TweepError as e:
+            print(e)
+            print('sleeping...')
             time.sleep(60)
         except StopIteration:
             break
-        
+
 main()
