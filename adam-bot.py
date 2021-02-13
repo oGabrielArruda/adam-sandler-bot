@@ -2,6 +2,7 @@ import tweepy
 import requests
 import random
 import time
+import os
 from boto.s3.connection import S3Connection
 
 consumer_key = os.environ['CONSUMER_KEY']
