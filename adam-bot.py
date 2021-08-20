@@ -2,13 +2,13 @@ import tweepy
 import requests
 import random
 import time
-import os
-from boto.s3.connection import S3Connection
+from os import environ
 
-consumer_key = os.environ['CONSUMER_KEY']
-consumer_secret = os.environ['CONSUMER_SECRET']
-access_token = os.environ['ACCESS_TOKEN']
-access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
+consumer_key = environ['CONSUMER_KEY']
+consumer_secret = environ['CONSUMER_SECRET']
+access_token = environ['ACCESS_KEY']
+access_token_secret = environ['ACCESS_SECRET']
+
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -36,7 +36,7 @@ def generate_joke_by_lang(url, quest_field, answer_field):
 
 def generate_joke(lang):
     if(lang == 'pt'):
-        url = 'https://api-charada.herokuapp.com/puzzle'
+        url = 'https://api-charada.herokuapp.com/puzzle?lang=ptbr'
         return 'lá vai uma piada engraçada\n\n' + generate_joke_by_lang(url, 'question', 'answer')
     elif(lang == 'en'):
         url = 'https://official-joke-api.appspot.com/random_joke'
@@ -44,7 +44,7 @@ def generate_joke(lang):
 
 def select_image_path():
     nmr = random.randint(1, 31)
-    image_path = str(nmr) + '.jpg'
+    image_path = 'images/' + str(nmr) + '.jpg'
     return image_path
 
 def read_last_seen(FILE_NAME):
