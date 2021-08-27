@@ -2,13 +2,12 @@ import tweepy
 import requests
 import random
 import time
-from os import environ
+import os
 
-consumer_key = environ['CONSUMER_KEY']
-consumer_secret = environ['CONSUMER_SECRET']
-access_token = environ['ACCESS_KEY']
-access_token_secret = environ['ACCESS_SECRET']
-
+consumer_key = os.environ.get('CONSUMER_KEY')
+consumer_secret = os.environ.get('CONSUMER_SECRET')
+access_token = os.environ.get('ACCESS_KEY')
+access_token_secret = os.environ.get('ACCESS_SECRET')
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -36,7 +35,7 @@ def generate_joke_by_lang(url, quest_field, answer_field):
 
 def generate_joke(lang):
     if(lang == 'pt'):
-        url = 'https://api-charada.herokuapp.com/puzzle?lang=ptbr'
+        url = 'https://api-charadas.herokuapp.com/puzzle?lang=ptbr'
         return 'lá vai uma piada engraçada\n\n' + generate_joke_by_lang(url, 'question', 'answer')
     elif(lang == 'en'):
         url = 'https://official-joke-api.appspot.com/random_joke'
@@ -60,8 +59,8 @@ def store_last_seen(FILE_NAME, last_seen_id):
     return
 
 def is_not_reply(tweet):
-    count = tweet.full_text.count('@')
-    return count < 5
+    text = tweet.full_text
+    return text.count('@adamsandlerbot en') + text.count('@adamsandlerbot pt') > 0
 
 def reply_tweet(tweet, joke, img):
     status = '@' + tweet.user.screen_name + ' ' + joke
